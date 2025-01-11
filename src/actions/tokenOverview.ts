@@ -116,6 +116,13 @@ export const getTokenOverviewAction: Action = {
                 return false;
             }
 
+            if (tokenQuery.symbol && !tokenQuery.address) {
+                callback?.({
+                    text: "Ticker is not enough please provide me the contract address",
+                });
+                return false;
+            }
+
             elizaLogger.log(`Fetching token data...`);
 
             // Fetch token data
