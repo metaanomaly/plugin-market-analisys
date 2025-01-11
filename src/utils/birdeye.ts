@@ -102,3 +102,73 @@ export async function fetchTokenOverview(
     throw error;
   }
 }
+
+export interface TrendingToken {
+  address: string;
+  decimals: number;
+  liquidity: number;
+  logoURI: string;
+  name: string;
+  symbol: string;
+  volume24hUSD: number;
+  rank: number;
+  price: number;
+}
+
+export interface TrendingTokensResponse {
+  updateUnixTime: number;
+  updateTime: string;
+  tokens: TrendingToken[];
+  total: number;
+}
+
+export async function fetchTrendingTokens(
+  apiKey?: string,
+  cache?: { get: (key: string) => any; set: (key: string, value: any) => void },
+  limit: number = 20
+): Promise<TrendingTokensResponse> {
+  try {
+    // Check cache first if provided
+    if (cache) {
+      const cacheKey = `trending_tokens_${limit}`;
+      const cachedData = cache.get(cacheKey);
+      if (cachedData) {
+        console.log(`Returning cached trending tokens`);
+        return cachedData;
+      }
+    }
+
+    const response = await fetch(
+      `https://public-api.birdeye.so/defi/token_trending?sort_by=rank&sort_type=asc&offset=0&limit=${limit}`,
+      {
+        method: "GET",
+        headers: {
+          "accept": "application/json",
+          "x-api-key": apiKey || "",
+          "x-chain": "solana"
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data.success || !data.data) {
+      throw new Error("Failed to fetch trending tokens data");
+    }
+
+    // Cache the response if cache is provided
+    if (cache) {
+      const cacheKey = `trending_tokens_${limit}`;
+      cache.set(cacheKey, data.data);
+    }
+
+    return data.data;
+  } catch (error) {
+    console.error("Error fetching trending tokens:", error);
+    throw error;
+  }
+}
