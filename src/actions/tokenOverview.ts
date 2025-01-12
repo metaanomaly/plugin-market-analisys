@@ -36,6 +36,8 @@ Given the recent messages, extract the following information about the token que
 - Token contract address if provided
 - Token symbol if provided
 
+NOTE: If you see addresses like this 2gkevSAUExkSUwwwj6uNbzwwNCXyzEBkGLg4wAyUpump remember that pump suffix IS PART OF THE ADDRESS, do not remove it.
+
 Respond with a JSON markdown block containing only the extracted values. Use "" (empty string) for any values that cannot be determined.
 IMPORTANT: Response format should be in this format:
 \`\`\`json
